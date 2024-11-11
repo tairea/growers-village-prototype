@@ -1,17 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tiles</title>
-    <style>body {
-  margin: 0;
-}
-
-</style>
-</head>
-<body>
+    <link rel="stylesheet" href="/index.77a9bc14.css">
+  </head>
+  <body>
+    <div class="view-buttons">
+      <button id="addRowBtn">Add Row</button>
+      <button id="isoView">Iso View</button>
+      <button id="flyView">Fly</button>
+      <button id="addCropBtn">Add Crop</button>
+      <button id="watermelonBtn" class="model-btn" disabled="">
+        Watermelon
+      </button>
+      <button id="tomatoBtn" class="model-btn" disabled="">Tomato</button>
+    </div>
+    <div id="cameraInfo" style="color: #fff; white-space: pre-line; background: #000000b3; border-radius: 5px; padding: 10px; font-family: monospace; font-size: 14px; line-height: 1.5; position: fixed; top: 10px; right: 10px"></div>
+    <div id="rowModal" class="modal" style="z-index: 1000; background: #fff; border-radius: 5px; padding: 20px; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%)">
+      <h3>Save Row</h3>
+      <div>
+        <label for="rowName">Row Name:</label>
+        <input type="text" id="rowName">
+      </div>
+      <div>
+        <label for="rowDescription">Description:</label>
+        <textarea id="rowDescription"></textarea>
+      </div>
+      <div>
+        <button id="saveRow">Save Row</button>
+        <button id="cancelRow">Cancel</button>
+      </div>
+    </div>
     <script src="/index.64a4978e.js" defer=""></script>
-</body>
+  </body>
 </html>
