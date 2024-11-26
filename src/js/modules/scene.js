@@ -12,12 +12,16 @@ export class SceneManager {
   }
 
   setupLights() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
     this.scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    directionalLight.position.set(1, 2, 1);
     this.scene.add(directionalLight);
+
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight2.position.set(-1, 1, -1);
+    this.scene.add(directionalLight2);
   }
 
   addToScene(object) {

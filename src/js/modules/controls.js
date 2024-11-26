@@ -7,6 +7,19 @@ export class ControlsManager {
     this.renderer = renderer;
     this.app = app;
     this.orbit = new OrbitControls(camera.camera, renderer.getDomElement());
+
+    // Simple click handler for flying mode
+    this.renderer.getDomElement().addEventListener("pointerdown", () => {
+      if (this.camera.isFlying) {
+        this.camera.isFlying = false;
+        const flyBtn = document.getElementById("flyView");
+        if (flyBtn) {
+          flyBtn.textContent = "Fly";
+        }
+        this.orbit.enabled = true;
+      }
+    });
+
     this.isMouseDown = false;
     this.mousePosition = new THREE.Vector2();
     this.isAddingCrops = false;

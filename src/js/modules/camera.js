@@ -11,7 +11,11 @@ export class CameraManager {
 
     this.viewPositions = {
       top: { x: 0, y: 30, z: 0 },
-      iso: { x: 10, y: 15, z: -22 },
+      iso: { x: 10, y: 15, z: -22 }, // this is the starting position for iso view
+
+      // two 20x20 grids
+      // top: { x: 0, y: 45, z: 0 },
+      // iso: { x: 20, y: 30, z: -44 },
     };
 
     this.viewRotations = {
@@ -22,6 +26,7 @@ export class CameraManager {
     this.currentView = "iso";
     this.isFlying = false;
     this.flyingRadius = 25;
+    // this.flyingRadius = 50;
     this.flyingAngle = 0;
     this.flyingSpeed = 0.003;
 
@@ -50,7 +55,8 @@ export class CameraManager {
     targetPosition,
     targetRotation,
     duration = 2000,
-    viewType = "iso"
+    viewType = "iso",
+    callback = null
   ) {
     if (this.isFlying) {
       this.isFlying = false;
@@ -75,7 +81,6 @@ export class CameraManager {
       z: this.camera.rotation.z,
     };
 
-    // Calculate the shortest rotation path
     const rotationDiffs = {
       x: this.normalizeAngle(targetRotation.x - startRotation.x),
       y: this.normalizeAngle(targetRotation.y - startRotation.y),
@@ -88,27 +93,23 @@ export class CameraManager {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Easing function for smooth animation
       const easeProgress =
         progress < 0.5
           ? 2 * progress * progress
           : -1 + (4 - 2 * progress) * progress;
 
-      // Update position
       this.camera.position.set(
         startPosition.x + (targetPosition.x - startPosition.x) * easeProgress,
         startPosition.y + (targetPosition.y - startPosition.y) * easeProgress,
         startPosition.z + (targetPosition.z - startPosition.z) * easeProgress
       );
 
-      // Always interpolate rotation during animation, regardless of view type
       this.camera.rotation.set(
         startRotation.x + rotationDiffs.x * easeProgress,
         startRotation.y + rotationDiffs.y * easeProgress,
         startRotation.z + rotationDiffs.z * easeProgress
       );
 
-      // Update camera info UI during animation
       const cameraInfo = document.getElementById("cameraInfo");
       if (cameraInfo) {
         cameraInfo.innerHTML = `
@@ -127,20 +128,18 @@ export class CameraManager {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        // Ensure final position and rotation are exact
         this.camera.position.set(
           targetPosition.x,
           targetPosition.y,
           targetPosition.z
         );
-
         this.camera.rotation.set(
           targetRotation.x,
           targetRotation.y,
           targetRotation.z
         );
-
         this.currentView = viewType;
+        if (callback) callback();
       }
     };
 
@@ -176,6 +175,39 @@ export class CameraManager {
   startFlyingCamera() {
     this.isFlying = !this.isFlying;
     const flyBtn = document.getElementById("flyView");
+
+    if (this.isFlying) {
+      // Calculate the initial angle based on iso position
+      const isoX = this.viewPositions.iso.x;
+      const isoZ = this.viewPositions.iso.z;
+      this.flyingAngle = Math.atan2(isoZ, isoX);
+
+      // If we're not already at the iso position, animate to it first
+      const currentPos = this.camera.position;
+      const isAtIsoPosition =
+        Math.abs(currentPos.x - isoX) < 0.1 &&
+        Math.abs(currentPos.y - this.viewPositions.iso.y) < 0.1 &&
+        Math.abs(currentPos.z - isoZ) < 0.1;
+
+      if (!isAtIsoPosition) {
+        this.isFlying = false; // Temporarily disable flying
+        this.animateCamera(
+          this.viewPositions.iso,
+          this.viewRotations.iso,
+          1000,
+          "iso",
+          () => {
+            // Callback after animation completes
+            this.isFlying = true;
+            if (flyBtn) {
+              flyBtn.textContent = "Stop";
+            }
+          }
+        );
+        return;
+      }
+    }
+
     if (flyBtn) {
       flyBtn.textContent = this.isFlying ? "Stop" : "Fly";
     }
